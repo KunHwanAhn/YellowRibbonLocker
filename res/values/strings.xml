@@ -6,8 +6,7 @@
     <string name="switch_yellow_ribbon">Yellow ribbon as a switch</string>
     <string name="switch_unlock_point">Unlock point to unlock screen</string>
     <string name="switch_layout_text">Remember 20140416</string>
-    <!-- This id is only for an sample adds, must change this -->
-    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_ad_unit_id">my_add_unit_id</string>
 
     <color name="switch_layout_text_color">#ffff00</color>
 
