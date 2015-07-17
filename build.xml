@@ -1,0 +1,32 @@
+<project name="YellowRibbonLocker" basedir="." default="build" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <property name="src.dir" value="src"/>
+    <property name="test.dir" value="test"/>
+    <property name="lib.dir" value="libs" />
+    <property name="bin.dir" value="bin"/>
+    <property name="build.dir" value="build"/>
+    <property name="testresult.dir" value="${build.dir}/${test.dir}"/>
+    <property name="test.bin.dir" value="${testresult.dir}/${bin.dir}"/>
+    <property name="testreport.dir" value="${testresult.dir}/report"/>
+    <property name="jar.dir" value="${build.dir}/jar"/>
+    <property name="pkg.name" value="com.ak.natural"/>
+    <property name="main" value="${pkg.name}.main.Main"/>
+
+    <path id="lib.path.id">
+        <fileset dir="${lib.dir}" />
+    </path>
+
+    <target name="clean-cache">
+        <ivy:cleancache/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${bin.dir}"/>
+        <delete dir="${lib.dir}"/>
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="resolve" depends="clean">
+        <ivy:retrieve pattern="${lib.dir}/[artifact].[ext]" />
+    </target>
+        
+</project>

@@ -1,0 +1,7 @@
+<ivy-module version="2.0">
+    <info organisation="KunhwanAhn" module="YellowRibbonLocker"/>
+    <dependencies>
+        <dependency org="junit" name="junit" rev="4.12"/>
+        <dependency org="org.hamcrest" name="hamcrest-core" rev="1.3"/>
+    </dependencies>
+</ivy-module>
