@@ -12,6 +12,9 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 public class MainActivity extends Activity {
     private ImageView mSwitchRibbon = null;
     private ImageView mSwitchUnlock = null;
@@ -36,12 +39,22 @@ public class MainActivity extends Activity {
         mSwitchUnlock = (ImageView) findViewById(R.id.switch_unlock_point);
 
         startService(new Intent(this, YellowRibbonLockerService.class));
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override
     public void onBackPressed() {
         // Just return to ignore back key event
         return;
+    }
+
+    @Override
+    public void onUserLeaveHint() {
+        // Close unlock screen when user push the home key button
+        unlockScreen(null);
     }
 
     public void unlockScreen(View view) {
