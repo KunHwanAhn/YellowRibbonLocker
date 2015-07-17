@@ -1,5 +1,6 @@
 <resources>
 
     <string name="app_name">노란리본잠금</string>
+    <string name="switch_layout_text">기억하자 20140416</string>
 
 </resources>

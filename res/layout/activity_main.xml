@@ -4,9 +4,47 @@
     android:layout_height="match_parent"
     tools:context="${relativePackage}.${activityClass}" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+    <RelativeLayout
+        android:id="@+id/locker_layout"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/black" >
+
+        <ImageView
+            android:id="@+id/switch_yellow_ribbon"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            android:contentDescription="@string/switch_yellow_ribbon"
+            android:src="@drawable/yellow_ribbon" />
+
+        <TextView
+            android:id="@+id/switch_layout_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="@string/switch_layout_text"
+            android:textColor="@color/switch_layout_text_color" />
+
+        <ImageView
+            android:id="@+id/switch_unlock_point"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@android:color/black"
+            android:contentDescription="@string/switch_unlock_point"
+            android:src="@drawable/paper_boat" />
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_above="@id/locker_layout"
+        android:layout_alignParentTop="true"
+        android:background="@android:color/black"
+        android:contentDescription="@string/main_yellow_ribbon"
+        android:src="@drawable/yellow_ribbon" />
 
 </RelativeLayout>

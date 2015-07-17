@@ -2,6 +2,11 @@
 <resources>
 
     <string name="app_name">YellowRibbonLocker</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="main_yellow_ribbon">Yellow ribbon on the main view</string>
+    <string name="switch_yellow_ribbon">Yellow ribbon as a switch</string>
+    <string name="switch_unlock_point">Unlock point to unlock screen</string>
+    <string name="switch_layout_text">Remember 20140416</string>
+
+    <color name="switch_layout_text_color">#ffff00</color>
 
 </resources>
