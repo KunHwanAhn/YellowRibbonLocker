@@ -21,6 +21,7 @@
     <property name="test.dir" value="test"/>
     <property name="lib.dir" value="libs" />
     <property name="bin.dir" value="bin"/>
+    <property name="gen.dir" value="gen"/>
     <property name="build.dir" value="build"/>
     <property name="testresult.dir" value="${build.dir}/${test.dir}"/>
     <property name="test.bin.dir" value="${testresult.dir}/${bin.dir}"/>
@@ -40,6 +41,7 @@
     <target name="clean">
         <delete dir="${bin.dir}"/>
         <delete dir="${lib.dir}"/>
+        <delete dir="${gen.dir}"/>
         <delete dir="${build.dir}"/>
     </target>
 
