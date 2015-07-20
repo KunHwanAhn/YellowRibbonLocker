@@ -2,6 +2,7 @@ bin/
 build/
 libs/
 gen/
-project.properties
+ant.properties
+local.properties
 proguard-project.txt
 ic_launcher-web.png
