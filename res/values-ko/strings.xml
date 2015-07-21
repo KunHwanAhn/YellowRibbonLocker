@@ -1,6 +1,9 @@
 <resources>
 
+    <!-- Strings for Values -->
     <string name="app_name">노란리본잠금</string>
     <string name="switch_layout_text">기억하자 20140416</string>
+    <string name="date_format">yyyy년 MMM dd일 (EEE) HH:mm</string>
+    <string name="days_format">사고 %d일 째</string>
 
 </resources>

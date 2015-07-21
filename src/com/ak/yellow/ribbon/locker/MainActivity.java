@@ -1,5 +1,11 @@
 package com.ak.yellow.ribbon.locker;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
@@ -14,16 +20,28 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 
 public class MainActivity extends Activity {
+    private static final long ONE_SECOND = 1000;
+    private static final long ONE_MINUTE = ONE_SECOND * 60;
+    private static final long ONE_HOUR = ONE_MINUTE * 60;
+    private static final long ONE_DAY = ONE_HOUR * 24;
+    private static final String THE_DAY = "2014-04-16";
+    private static final String BASIC_DATE_PORMAT = "yyyy-MM-dd";
+
+    private TextView mTimeView = null;
+    private TextView mDDayView = null;
     private ImageView mSwitchRibbon = null;
     private ImageView mSwitchUnlock = null;
 
     private android.view.ViewGroup.LayoutParams mParams = null;
     private int[] mUnlockPoint = null;
+    private String mDateFormat = null;
+    private TimeUpdateThread mTimeUpdateThrad = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +53,13 @@ public class MainActivity extends Activity {
                         | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                         | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         setContentView(R.layout.activity_main);
+
+        mDateFormat = getString(R.string.date_format);
+        mTimeView = (TextView) findViewById(R.id.time_view);
+        mTimeUpdateThrad = new TimeUpdateThread();
+        mTimeUpdateThrad.start();
+
+        mDDayView = (TextView) findViewById(R.id.d_day_view);
 
         RibbonTouchListener ribbonListener = new RibbonTouchListener();
         mSwitchRibbon = (ImageView) findViewById(R.id.switch_yellow_ribbon);
@@ -62,6 +87,7 @@ public class MainActivity extends Activity {
     }
 
     public void unlockScreen(View view) {
+        mTimeUpdateThrad.killThread();
         finish();
     }
 
@@ -72,6 +98,33 @@ public class MainActivity extends Activity {
         } else {
             return false;
         }
+    }
+
+    private void updateTimeView() {
+        runOnUiThread(new Runnable() {
+
+            @Override
+            public void run() {
+                Calendar today = Calendar.getInstance();
+                DateFormat df = new SimpleDateFormat(mDateFormat,
+                        Locale.getDefault());
+                mTimeView.setText(df.format(today.getTime()));
+
+                df = new SimpleDateFormat(BASIC_DATE_PORMAT,
+                        Locale.getDefault());
+                Calendar theDay = Calendar.getInstance();
+                try {
+                    theDay.setTime(df.parse(THE_DAY));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                long passedDays = (today.getTime().getTime() - theDay.getTime()
+                        .getTime()) / ONE_DAY;
+
+                mDDayView.setText(String.format(
+                        getString(R.string.days_format), passedDays + 1));
+            }
+        });
     }
 
     private class RibbonTouchListener implements OnTouchListener,
@@ -115,6 +168,28 @@ public class MainActivity extends Activity {
 
         @Override
         public void onClick(View v) {
+        }
+
+    }
+
+    private class TimeUpdateThread extends Thread {
+        private boolean mIsAlive = false;
+
+        @Override
+        public void run() {
+            while (!mIsAlive) {
+                updateTimeView();
+                try {
+                    sleep(ONE_SECOND);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        }
+
+        public void killThread() {
+            mIsAlive = true;
         }
 
     }
