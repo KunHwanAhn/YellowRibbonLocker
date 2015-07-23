@@ -12,6 +12,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -68,6 +71,10 @@ public class MainActivity extends Activity {
         mSwitchUnlock = (ImageView) findViewById(R.id.switch_unlock_point);
 
         startService(new Intent(this, YellowRibbonLockerService.class));
+        
+        TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+        CallStateListener callListener = new CallStateListener();
+        manager.listen(callListener, PhoneStateListener.LISTEN_CALL_STATE);
 
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -83,10 +90,10 @@ public class MainActivity extends Activity {
     @Override
     public void onUserLeaveHint() {
         // Close unlock screen when user push the home key button
-        unlockScreen(null);
+        unlockScreen();
     }
 
-    public void unlockScreen(View view) {
+    public void unlockScreen() {
         mTimeUpdateThrad.killThread();
         finish();
     }
@@ -150,13 +157,13 @@ public class MainActivity extends Activity {
                 v.setLayoutParams(params);
 
                 if (isOnUnlockPoint((int) event.getRawX())) {
-                    unlockScreen(v);
+                    unlockScreen();
                 }
                 break;
 
             case MotionEvent.ACTION_UP:
                 if (isOnUnlockPoint((int) event.getRawX())) {
-                    unlockScreen(v);
+                    unlockScreen();
                 } else {
                     v.setLayoutParams(mParams);
                 }
@@ -168,6 +175,26 @@ public class MainActivity extends Activity {
 
         @Override
         public void onClick(View v) {
+        }
+
+    }
+
+    private class CallStateListener extends PhoneStateListener {
+        
+        @Override
+        public void onCallStateChanged(int state, String incomingNumber) {
+
+            switch (state) {
+            case TelephonyManager.CALL_STATE_IDLE:
+                break;
+
+            case TelephonyManager.CALL_STATE_OFFHOOK:
+                unlockScreen();
+                break;
+
+            case TelephonyManager.CALL_STATE_RINGING:
+                break;
+            }
         }
 
     }
