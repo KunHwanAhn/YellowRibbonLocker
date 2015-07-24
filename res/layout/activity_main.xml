@@ -82,4 +82,14 @@
         android:textColor="@color/basic_text_color"
         android:textSize="15sp" />
 
+    <ImageView
+        android:id="@+id/power_button"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/time_view"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/power_button_description"
+        android:src="@drawable/power_button" />
+
 </RelativeLayout>

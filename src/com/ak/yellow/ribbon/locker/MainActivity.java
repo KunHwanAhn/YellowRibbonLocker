@@ -10,8 +10,13 @@ import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -24,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -34,12 +40,14 @@ public class MainActivity extends Activity {
     private static final long ONE_HOUR = ONE_MINUTE * 60;
     private static final long ONE_DAY = ONE_HOUR * 24;
     private static final String THE_DAY = "2014-04-16";
-    private static final String BASIC_DATE_PORMAT = "yyyy-MM-dd";
+    private static final String BASIC_DATE_FORMAT = "yyyy-MM-dd";
+    private static final String DAY_ONLY_FORMAT = "dd";
 
     private TextView mTimeView = null;
     private TextView mDDayView = null;
     private ImageView mSwitchRibbon = null;
     private ImageView mSwitchUnlock = null;
+    private ImageView mPowerButton = null;
 
     private android.view.ViewGroup.LayoutParams mParams = null;
     private int[] mUnlockPoint = null;
@@ -70,8 +78,14 @@ public class MainActivity extends Activity {
         mSwitchRibbon.setOnClickListener(ribbonListener);
         mSwitchUnlock = (ImageView) findViewById(R.id.switch_unlock_point);
 
+        boolean powerState = checkPowerState();
+        PowerListener powerListener = new PowerListener();
+        mPowerButton = (ImageView) findViewById(R.id.power_button);
+        mPowerButton.setOnClickListener(powerListener);
+        updatePowerButton(powerState);
+
         startService(new Intent(this, YellowRibbonLockerService.class));
-        
+
         TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         CallStateListener callListener = new CallStateListener();
         manager.listen(callListener, PhoneStateListener.LISTEN_CALL_STATE);
@@ -117,7 +131,7 @@ public class MainActivity extends Activity {
                         Locale.getDefault());
                 mTimeView.setText(df.format(today.getTime()));
 
-                df = new SimpleDateFormat(BASIC_DATE_PORMAT,
+                df = new SimpleDateFormat(BASIC_DATE_FORMAT,
                         Locale.getDefault());
                 Calendar theDay = Calendar.getInstance();
                 try {
@@ -132,6 +146,43 @@ public class MainActivity extends Activity {
                         getString(R.string.days_format), passedDays + 1));
             }
         });
+    }
+
+    private boolean checkPowerState() {
+        SharedPreferences sharedPref = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+        String powerStateKey = getString(R.string.locker_power_state_key);
+        boolean isTurnOn = getResources().getBoolean(
+                R.bool.locker_power_default_state);
+        return sharedPref.getBoolean(powerStateKey, isTurnOn);
+    }
+
+    private void updatePowerButton(boolean powerState) {
+        Drawable drawable = mPowerButton.getDrawable().mutate();
+
+        if (powerState) {
+            drawable.setColorFilter(Color.YELLOW, Mode.MULTIPLY);
+        } else {
+            drawable.setColorFilter(Color.DKGRAY, Mode.MULTIPLY);
+            Toast.makeText(this, R.string.turn_off_toast_string,
+                    Toast.LENGTH_LONG).show();
+            updateOffDate();
+        }
+        mPowerButton.setImageDrawable(drawable);
+    }
+
+    private void updateOffDate() {
+        SharedPreferences sharedPref = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+        String offDateKey = getString(R.string.locker_off_date_key);
+        Calendar today = Calendar.getInstance();
+        DateFormat df = new SimpleDateFormat(DAY_ONLY_FORMAT,
+                Locale.getDefault());
+        String offDay = df.format(today.getTime());
+
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(offDateKey, offDay);
+        editor.commit();
     }
 
     private class RibbonTouchListener implements OnTouchListener,
@@ -180,7 +231,7 @@ public class MainActivity extends Activity {
     }
 
     private class CallStateListener extends PhoneStateListener {
-        
+
         @Override
         public void onCallStateChanged(int state, String incomingNumber) {
 
@@ -195,6 +246,23 @@ public class MainActivity extends Activity {
             case TelephonyManager.CALL_STATE_RINGING:
                 break;
             }
+        }
+
+    }
+
+    private class PowerListener implements OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            SharedPreferences sharedPref = PreferenceManager
+                    .getDefaultSharedPreferences(getApplicationContext());
+            String powerStateKey = getString(R.string.locker_power_state_key);
+            boolean isTurnOn = checkPowerState();
+            updatePowerButton(!isTurnOn);
+
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean(powerStateKey, !isTurnOn);
+            editor.commit();
         }
 
     }
