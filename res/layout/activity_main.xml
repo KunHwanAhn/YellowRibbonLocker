@@ -13,7 +13,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_ad_unit_id" />
+        ads:adUnitId="@string/banner_ad_unit_id"
+        android:visibility="invisible" />
 
     <RelativeLayout
         android:id="@+id/locker_layout"
