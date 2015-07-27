@@ -19,15 +19,13 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,12 +43,11 @@ public class MainActivity extends Activity {
 
     private TextView mTimeView = null;
     private TextView mDDayView = null;
-    private ImageView mSwitchRibbon = null;
-    private ImageView mSwitchUnlock = null;
     private ImageView mPowerButton = null;
+    private ImageView mScreenLockerCircle = null;
 
-    private android.view.ViewGroup.LayoutParams mParams = null;
-    private int[] mUnlockPoint = null;
+    private float mBaseX, mBaseY;
+    private int mCircleWidth = 0, mCircleHeight = 0;
     private String mDateFormat = null;
     private TimeUpdateThread mTimeUpdateThrad = null;
 
@@ -71,11 +68,7 @@ public class MainActivity extends Activity {
 
         mDDayView = (TextView) findViewById(R.id.d_day_view);
 
-        RibbonTouchListener ribbonListener = new RibbonTouchListener();
-        mSwitchRibbon = (ImageView) findViewById(R.id.switch_yellow_ribbon);
-        mSwitchRibbon.setOnTouchListener(ribbonListener);
-        mSwitchRibbon.setOnClickListener(ribbonListener);
-        mSwitchUnlock = (ImageView) findViewById(R.id.switch_unlock_point);
+        mScreenLockerCircle = (ImageView) findViewById(R.id.screen_locker_circle_view);
 
         boolean powerState = checkPowerState();
         PowerListener powerListener = new PowerListener();
@@ -106,18 +99,114 @@ public class MainActivity extends Activity {
         unlockScreen();
     }
 
-    public void unlockScreen() {
-        mTimeUpdateThrad.killThread();
-        finish();
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            doUnlockUnderHoneycomb(event);
+        } else {
+            doUnlock(event);
+        }
+        return super.onTouchEvent(event);
     }
 
-    private boolean isOnUnlockPoint(int x) {
-        if (mUnlockPoint[0] <= x
-                && mUnlockPoint[0] + mSwitchUnlock.getWidth() >= x) {
+    private void doUnlockUnderHoneycomb(MotionEvent event) {
+        float x = event.getRawX();
+        float y = event.getRawY();
+        float deltaX = mScreenLockerCircle.getWidth() * 0.5f;
+        float deltaY = mScreenLockerCircle.getHeight() * 0.5f;
+        float currX = x - deltaX;
+        float currY = y - deltaY;
+        LayoutParams params = null;
+
+        if (mCircleWidth == 0 && mCircleHeight == 0) {
+            mCircleWidth = mScreenLockerCircle.getWidth();
+            mCircleHeight = mScreenLockerCircle.getHeight();
+        }
+        switch (event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            mBaseX = x - deltaX;
+            mBaseY = y - deltaY;
+            mScreenLockerCircle
+                    .setImageResource(R.drawable.screen_locker_circle_lock);
+            mScreenLockerCircle.setVisibility(View.VISIBLE);
+
+            params = new LayoutParams(mCircleWidth, mCircleHeight);
+            params.leftMargin = (int) currX;
+            params.topMargin = (int) currY;
+            mScreenLockerCircle.setLayoutParams(params);
+            break;
+
+        case MotionEvent.ACTION_UP:
+            mScreenLockerCircle.setVisibility(View.INVISIBLE);
+
+            if (isOnUnlockPoint(currX, currY, deltaX)) {
+                unlockScreen();
+            }
+            break;
+
+        case MotionEvent.ACTION_MOVE:
+            updateScreenLockerCircle(isOnUnlockPoint(currX, currY, deltaX));
+            break;
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private void doUnlock(MotionEvent event) {
+        float x = event.getRawX();
+        float y = event.getRawY();
+        float deltaX = mScreenLockerCircle.getWidth() * 0.5f;
+        float deltaY = mScreenLockerCircle.getHeight() * 0.5f;
+        float currX = x - deltaX;
+        float currY = y - deltaY;
+
+        switch (event.getAction()) {
+        case MotionEvent.ACTION_DOWN:
+            mBaseX = x - deltaX;
+            mBaseY = y - deltaY;
+            mScreenLockerCircle
+                    .setImageResource(R.drawable.screen_locker_circle_lock);
+            mScreenLockerCircle.setVisibility(View.VISIBLE);
+
+            mScreenLockerCircle.setX(mBaseX);
+            mScreenLockerCircle.setY(mBaseY);
+            break;
+
+        case MotionEvent.ACTION_UP:
+            mScreenLockerCircle.setVisibility(View.INVISIBLE);
+
+            if (isOnUnlockPoint(currX, currY, deltaX)) {
+                unlockScreen();
+            }
+            break;
+
+        case MotionEvent.ACTION_MOVE:
+            updateScreenLockerCircle(isOnUnlockPoint(currX, currY, deltaX));
+            break;
+        }
+    }
+
+    private boolean isOnUnlockPoint(float currX, float currY, float radius) {
+        if ((Math.pow(currX - mBaseX, 2) + Math.pow(currY - mBaseY, 2)) > Math
+                .pow(radius, 2)) {
             return true;
         } else {
             return false;
         }
+    }
+
+    private void updateScreenLockerCircle(boolean isUnlocked) {
+        if (isUnlocked) {
+            mScreenLockerCircle
+                    .setImageResource(R.drawable.screen_locker_circle_unlock);
+        } else {
+            mScreenLockerCircle
+                    .setImageResource(R.drawable.screen_locker_circle_lock);
+        }
+    }
+
+    public void unlockScreen() {
+        mTimeUpdateThrad.killThread();
+        finish();
     }
 
     private void updateTimeView() {
@@ -182,58 +271,6 @@ public class MainActivity extends Activity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(offDateKey, offDay);
         editor.commit();
-    }
-
-    private class RibbonTouchListener implements OnTouchListener,
-            OnClickListener {
-
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            RelativeLayout.LayoutParams params = null;
-
-            switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mUnlockPoint = new int[2];
-                mSwitchUnlock.getLocationOnScreen(mUnlockPoint);
-                mParams = mSwitchRibbon.getLayoutParams();
-
-                params = new RelativeLayout.LayoutParams(
-                        mSwitchRibbon.getWidth(), mSwitchRibbon.getHeight());
-                params.leftMargin = (int) (event.getRawX() - mSwitchRibbon
-                        .getWidth() * 0.5f);
-
-                mSwitchRibbon.setLayoutParams(params);
-                break;
-
-            case MotionEvent.ACTION_MOVE:
-                params = new RelativeLayout.LayoutParams(
-                        mSwitchRibbon.getWidth(), mSwitchRibbon.getHeight());
-
-                params.leftMargin = (int) (event.getRawX() - mSwitchRibbon
-                        .getWidth() * 0.5f);
-                v.setLayoutParams(params);
-
-                if (isOnUnlockPoint((int) event.getRawX())) {
-                    unlockScreen();
-                }
-                break;
-
-            case MotionEvent.ACTION_UP:
-                if (isOnUnlockPoint((int) event.getRawX())) {
-                    unlockScreen();
-                } else {
-                    v.setLayoutParams(mParams);
-                }
-                break;
-            }
-
-            return false;
-        }
-
-        @Override
-        public void onClick(View v) {
-        }
-
     }
 
     private class CallStateListener extends PhoneStateListener {

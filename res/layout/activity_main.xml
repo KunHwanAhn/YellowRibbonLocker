@@ -22,14 +22,6 @@
         android:layout_above="@id/adView"
         android:background="@android:color/transparent" >
 
-        <ImageView
-            android:id="@+id/switch_yellow_ribbon"
-            android:layout_width="64dp"
-            android:layout_height="match_parent"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/switch_yellow_ribbon"
-            android:src="@drawable/yellow_ribbon" />
-
         <TextView
             android:id="@+id/switch_layout_text"
             android:layout_width="wrap_content"
@@ -40,15 +32,6 @@
             android:text="@string/switch_layout_text"
             android:textColor="@color/basic_text_color"
             android:textSize="15sp" />
-
-        <ImageView
-            android:id="@+id/switch_unlock_point"
-            android:layout_width="64dp"
-            android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/switch_unlock_point"
-            android:src="@drawable/paper_boat" />
     </RelativeLayout>
 
     <TextView
@@ -91,5 +74,15 @@
         android:background="@android:color/transparent"
         android:contentDescription="@string/power_button_description"
         android:src="@drawable/power_button" />
+
+    <ImageView
+        android:id="@+id/screen_locker_circle_view"
+        android:layout_width="@dimen/screen_locker_circle_size"
+        android:layout_height="@dimen/screen_locker_circle_size"
+        android:layout_centerInParent="true"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/screen_locker_circle"
+        android:src="@drawable/screen_locker_circle_lock"
+        android:visibility="invisible" />
 
 </RelativeLayout>

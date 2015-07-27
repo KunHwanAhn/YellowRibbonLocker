@@ -10,6 +10,7 @@
     <string name="time_view_hint">current time</string>
     <string name="d_day_view_hint">From the date</string>
     <string name="power_button_description">Power Button to turn on or off this app</string>
+    <string name="screen_locker_circle">Screen Locker Circle</string>
 
     <!-- Strings for Values -->
     <string name="switch_layout_text">Remember 20140416</string>
@@ -21,6 +22,8 @@
     <string name="banner_ad_unit_id">my_add_unit_id</string>
 
     <bool name="locker_power_default_state">true</bool>
+
+    <dimen name="screen_locker_circle_size">256dp</dimen>
 
     <color name="basic_text_color">#ffff00</color>
 
