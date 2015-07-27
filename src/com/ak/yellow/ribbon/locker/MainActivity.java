@@ -101,22 +101,12 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            doUnlockUnderHoneycomb(event);
-        } else {
-            doUnlock(event);
-        }
-        return super.onTouchEvent(event);
-    }
-
-    private void doUnlockUnderHoneycomb(MotionEvent event) {
         float x = event.getRawX();
         float y = event.getRawY();
         float deltaX = mScreenLockerCircle.getWidth() * 0.5f;
         float deltaY = mScreenLockerCircle.getHeight() * 0.5f;
         float currX = x - deltaX;
         float currY = y - deltaY;
-        LayoutParams params = null;
 
         if (mCircleWidth == 0 && mCircleHeight == 0) {
             mCircleWidth = mScreenLockerCircle.getWidth();
@@ -129,16 +119,11 @@ public class MainActivity extends Activity {
             mScreenLockerCircle
                     .setImageResource(R.drawable.screen_locker_circle_lock);
             mScreenLockerCircle.setVisibility(View.VISIBLE);
-
-            params = new LayoutParams(mCircleWidth, mCircleHeight);
-            params.leftMargin = (int) currX;
-            params.topMargin = (int) currY;
-            mScreenLockerCircle.setLayoutParams(params);
+            doActionDown(mBaseX, mBaseY);
             break;
 
         case MotionEvent.ACTION_UP:
             mScreenLockerCircle.setVisibility(View.INVISIBLE);
-
             if (isOnUnlockPoint(currX, currY, deltaX)) {
                 unlockScreen();
             }
@@ -148,40 +133,20 @@ public class MainActivity extends Activity {
             updateScreenLockerCircle(isOnUnlockPoint(currX, currY, deltaX));
             break;
         }
+
+        return super.onTouchEvent(event);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void doUnlock(MotionEvent event) {
-        float x = event.getRawX();
-        float y = event.getRawY();
-        float deltaX = mScreenLockerCircle.getWidth() * 0.5f;
-        float deltaY = mScreenLockerCircle.getHeight() * 0.5f;
-        float currX = x - deltaX;
-        float currY = y - deltaY;
-
-        switch (event.getAction()) {
-        case MotionEvent.ACTION_DOWN:
-            mBaseX = x - deltaX;
-            mBaseY = y - deltaY;
-            mScreenLockerCircle
-                    .setImageResource(R.drawable.screen_locker_circle_lock);
-            mScreenLockerCircle.setVisibility(View.VISIBLE);
-
-            mScreenLockerCircle.setX(mBaseX);
-            mScreenLockerCircle.setY(mBaseY);
-            break;
-
-        case MotionEvent.ACTION_UP:
-            mScreenLockerCircle.setVisibility(View.INVISIBLE);
-
-            if (isOnUnlockPoint(currX, currY, deltaX)) {
-                unlockScreen();
-            }
-            break;
-
-        case MotionEvent.ACTION_MOVE:
-            updateScreenLockerCircle(isOnUnlockPoint(currX, currY, deltaX));
-            break;
+    private void doActionDown(float x, float y) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            LayoutParams params = new LayoutParams(mCircleWidth, mCircleHeight);
+            params.leftMargin = (int) x;
+            params.topMargin = (int) y;
+            mScreenLockerCircle.setLayoutParams(params);
+        } else {
+            mScreenLockerCircle.setX(x);
+            mScreenLockerCircle.setY(y);
         }
     }
 
