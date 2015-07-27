@@ -51,7 +51,8 @@ public class YellowRibbonLockerReceiver extends BroadcastReceiver {
             if (action.equals(Intent.ACTION_SCREEN_OFF)
                     || action.equals(Intent.ACTION_BOOT_COMPLETED)) {
                 Intent i = new Intent(context, MainActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 context.startActivity(i);
             }
         }

@@ -22,9 +22,9 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -60,8 +60,7 @@ public class MainActivity extends Activity {
         setFullscreenMode(Build.VERSION.SDK_INT);
         // Set up our Lockscreen
         getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                        | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                         | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
         setContentView(R.layout.activity_main);
 
@@ -197,14 +196,21 @@ public class MainActivity extends Activity {
                 mUnlockPoint = new int[2];
                 mSwitchUnlock.getLocationOnScreen(mUnlockPoint);
                 mParams = mSwitchRibbon.getLayoutParams();
+
+                params = new RelativeLayout.LayoutParams(
+                        mSwitchRibbon.getWidth(), mSwitchRibbon.getHeight());
+                params.leftMargin = (int) (event.getRawX() - mSwitchRibbon
+                        .getWidth() * 0.5f);
+
+                mSwitchRibbon.setLayoutParams(params);
                 break;
 
             case MotionEvent.ACTION_MOVE:
                 params = new RelativeLayout.LayoutParams(
-                        LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                        mSwitchRibbon.getWidth(), mSwitchRibbon.getHeight());
 
-                params.leftMargin = (int) event.getRawX()
-                        - (mSwitchRibbon.getWidth() / 2);
+                params.leftMargin = (int) (event.getRawX() - mSwitchRibbon
+                        .getWidth() * 0.5f);
                 v.setLayoutParams(params);
 
                 if (isOnUnlockPoint((int) event.getRawX())) {
@@ -289,15 +295,11 @@ public class MainActivity extends Activity {
 
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void setFullscreenMode(int versionCode) {
-        if (versionCode < Build.VERSION_CODES.JELLY_BEAN) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (versionCode < Build.VERSION_CODES.HONEYCOMB) {
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
         } else {
-            View decorView = getWindow().getDecorView();
-            // Hide the status bar.
-            int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-            decorView.setSystemUiVisibility(uiOptions);
             // Remember that you should never show the action bar if the
             // status bar is hidden, so hide that too if necessary.
             ActionBar actionBar = getActionBar();
