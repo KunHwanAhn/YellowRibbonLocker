@@ -16,6 +16,7 @@ import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
@@ -37,6 +38,7 @@ public class MainActivity extends Activity {
     private static final long ONE_MINUTE = ONE_SECOND * 60;
     private static final long ONE_HOUR = ONE_MINUTE * 60;
     private static final long ONE_DAY = ONE_HOUR * 24;
+    private static final long VIBRATE_PERIOD = 50;
     private static final String THE_DAY = "2014-04-16";
     private static final String BASIC_DATE_FORMAT = "yyyy-MM-dd";
     private static final String DAY_ONLY_FORMAT = "dd";
@@ -50,6 +52,8 @@ public class MainActivity extends Activity {
     private int mCircleWidth = 0, mCircleHeight = 0;
     private String mDateFormat = null;
     private TimeUpdateThread mTimeUpdateThrad = null;
+    private Vibrator mVibrator = null;
+    private boolean mPassedUnlockPoint = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,10 @@ public class MainActivity extends Activity {
 
         mScreenLockerCircle = (ImageView) findViewById(R.id.screen_locker_circle_view);
 
+        if (getSystemService(VIBRATOR_SERVICE) != null) {
+            mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+        }
+
         boolean powerState = checkPowerState();
         PowerListener powerListener = new PowerListener();
         mPowerButton = (ImageView) findViewById(R.id.power_button);
@@ -82,9 +90,9 @@ public class MainActivity extends Activity {
         CallStateListener callListener = new CallStateListener();
         manager.listen(callListener, PhoneStateListener.LISTEN_CALL_STATE);
 
-//        AdView mAdView = (AdView) findViewById(R.id.adView);
-//        AdRequest adRequest = new AdRequest.Builder().build();
-//        mAdView.loadAd(adRequest);
+        // AdView mAdView = (AdView) findViewById(R.id.adView);
+        // AdRequest adRequest = new AdRequest.Builder().build();
+        // mAdView.loadAd(adRequest);
     }
 
     @Override
@@ -125,6 +133,7 @@ public class MainActivity extends Activity {
         case MotionEvent.ACTION_UP:
             mScreenLockerCircle.setVisibility(View.INVISIBLE);
             if (isOnUnlockPoint(currX, currY, deltaX)) {
+                vibrate();
                 unlockScreen();
             }
             break;
@@ -150,6 +159,12 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void vibrate() {
+        if (mVibrator != null) {
+            mVibrator.vibrate(VIBRATE_PERIOD);
+        }
+    }
+
     private boolean isOnUnlockPoint(float currX, float currY, float radius) {
         if ((Math.pow(currX - mBaseX, 2) + Math.pow(currY - mBaseY, 2)) > Math
                 .pow(radius, 2)) {
@@ -159,13 +174,20 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void updateScreenLockerCircle(boolean isUnlocked) {
-        if (isUnlocked) {
-            mScreenLockerCircle
-                    .setImageResource(R.drawable.screen_locker_circle_unlock);
+    private void updateScreenLockerCircle(boolean isOnUnlockPoint) {
+        if (isOnUnlockPoint) {
+            if (!mPassedUnlockPoint) {
+                mScreenLockerCircle
+                        .setImageResource(R.drawable.screen_locker_circle_unlock);
+                vibrate();
+                mPassedUnlockPoint = true;
+            }
         } else {
-            mScreenLockerCircle
-                    .setImageResource(R.drawable.screen_locker_circle_lock);
+            if (mPassedUnlockPoint) {
+                mScreenLockerCircle
+                        .setImageResource(R.drawable.screen_locker_circle_lock);
+                mPassedUnlockPoint = false;
+            }
         }
     }
 
