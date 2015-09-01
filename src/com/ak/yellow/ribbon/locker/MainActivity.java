@@ -90,9 +90,9 @@ public class MainActivity extends Activity {
         CallStateListener callListener = new CallStateListener();
         manager.listen(callListener, PhoneStateListener.LISTEN_CALL_STATE);
 
-        // AdView mAdView = (AdView) findViewById(R.id.adView);
-        // AdRequest adRequest = new AdRequest.Builder().build();
-        // mAdView.loadAd(adRequest);
+         AdView mAdView = (AdView) findViewById(R.id.adView);
+         AdRequest adRequest = new AdRequest.Builder().build();
+         mAdView.loadAd(adRequest);
     }
 
     @Override
