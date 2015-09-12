@@ -73,6 +73,7 @@ public class MainActivity extends Activity {
         mDDayView = (TextView) findViewById(R.id.d_day_view);
 
         mScreenLockerCircle = (ImageView) findViewById(R.id.screen_locker_circle_view);
+        mScreenLockerCircle.setTag((Integer) R.drawable.screen_locker_circle_lock);
 
         if (getSystemService(VIBRATOR_SERVICE) != null) {
             mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
@@ -111,10 +112,7 @@ public class MainActivity extends Activity {
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getRawX();
         float y = event.getRawY();
-        float deltaX = mScreenLockerCircle.getWidth() * 0.5f;
-        float deltaY = mScreenLockerCircle.getHeight() * 0.5f;
-        float currX = x - deltaX;
-        float currY = y - deltaY;
+        float unlockSize = mScreenLockerCircle.getWidth() * 0.5f;
 
         if (mCircleWidth == 0 && mCircleHeight == 0) {
             mCircleWidth = mScreenLockerCircle.getWidth();
@@ -122,24 +120,27 @@ public class MainActivity extends Activity {
         }
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
-            mBaseX = x - deltaX;
-            mBaseY = y - deltaY;
+            float deltaX = mScreenLockerCircle.getWidth() * 0.5f;
+            float deltaY = mScreenLockerCircle.getHeight() * 0.6f;
+            mBaseX = x;
+            mBaseY = y;
             mScreenLockerCircle
                     .setImageResource(R.drawable.screen_locker_circle_lock);
+            mScreenLockerCircle.setTag((Integer) R.drawable.screen_locker_circle_lock);
             mScreenLockerCircle.setVisibility(View.VISIBLE);
-            doActionDown(mBaseX, mBaseY);
+            doActionDown(x - deltaX, y - deltaY);
             break;
 
         case MotionEvent.ACTION_UP:
             mScreenLockerCircle.setVisibility(View.INVISIBLE);
-            if (isOnUnlockPoint(currX, currY, deltaX)) {
+            if (isOnUnlockPoint(x, y, unlockSize)) {
                 vibrate();
                 unlockScreen();
             }
             break;
 
         case MotionEvent.ACTION_MOVE:
-            updateScreenLockerCircle(isOnUnlockPoint(currX, currY, deltaX));
+            updateScreenLockerCircle(isOnUnlockPoint(x, y, unlockSize));
             break;
         }
 
@@ -179,6 +180,7 @@ public class MainActivity extends Activity {
             if (!mPassedUnlockPoint) {
                 mScreenLockerCircle
                         .setImageResource(R.drawable.screen_locker_circle_unlock);
+                mScreenLockerCircle.setTag((Integer) R.drawable.screen_locker_circle_unlock);
                 vibrate();
                 mPassedUnlockPoint = true;
             }
@@ -186,6 +188,7 @@ public class MainActivity extends Activity {
             if (mPassedUnlockPoint) {
                 mScreenLockerCircle
                         .setImageResource(R.drawable.screen_locker_circle_lock);
+                mScreenLockerCircle.setTag((Integer) R.drawable.screen_locker_circle_lock);
                 mPassedUnlockPoint = false;
             }
         }
