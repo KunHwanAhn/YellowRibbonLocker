@@ -18,7 +18,7 @@
     <RelativeLayout
         android:id="@+id/locker_layout"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="@dimen/screen_locker_text_view_height"
         android:layout_above="@id/adView"
         android:background="@android:color/transparent" >
 
@@ -31,7 +31,7 @@
             android:gravity="center"
             android:text="@string/switch_layout_text"
             android:textColor="@color/basic_text_color"
-            android:textSize="15sp" />
+            android:textSize="@dimen/text_size_medium" />
     </RelativeLayout>
 
     <TextView
@@ -43,7 +43,7 @@
         android:gravity="center_horizontal"
         android:hint="@string/time_view_hint"
         android:textColor="@color/basic_text_color"
-        android:textSize="24sp" />
+        android:textSize="@dimen/text_size_medium" />
 
     <ImageView
         android:layout_width="match_parent"
@@ -63,12 +63,12 @@
         android:gravity="center_horizontal"
         android:hint="@string/d_day_view_hint"
         android:textColor="@color/basic_text_color"
-        android:textSize="15sp" />
+        android:textSize="@dimen/text_size_samll" />
 
     <ImageView
         android:id="@+id/power_button"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="@dimen/screen_locker_text_view_height"
+        android:layout_height="@dimen/screen_locker_text_view_height"
         android:layout_alignParentRight="true"
         android:layout_below="@id/time_view"
         android:background="@android:color/transparent"

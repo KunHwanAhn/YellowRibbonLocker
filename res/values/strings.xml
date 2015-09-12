@@ -24,6 +24,9 @@
     <bool name="locker_power_default_state">true</bool>
 
     <dimen name="screen_locker_circle_size">256dp</dimen>
+    <dimen name="screen_locker_text_view_height">64dp</dimen>
+    <dimen name="text_size_samll">16sp</dimen>
+    <dimen name="text_size_medium">24sp</dimen>
 
     <color name="basic_text_color">#ffff00</color>
 
