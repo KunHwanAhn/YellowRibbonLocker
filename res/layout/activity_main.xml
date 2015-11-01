@@ -6,20 +6,11 @@
     android:background="@android:color/black"
     tools:context="${relativePackage}.${activityClass}" >
 
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        ads:adSize="BANNER"
-        ads:adUnitId="@string/banner_ad_unit_id" />
-
     <RelativeLayout
         android:id="@+id/locker_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/screen_locker_text_view_height"
-        android:layout_above="@id/adView"
+        android:layout_alignParentBottom="true"
         android:background="@android:color/transparent" >
 
         <TextView

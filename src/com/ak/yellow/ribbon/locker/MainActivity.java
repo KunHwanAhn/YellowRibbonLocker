@@ -30,9 +30,6 @@ import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-
 public class MainActivity extends Activity {
     private static final long ONE_SECOND = 1000;
     private static final long ONE_MINUTE = ONE_SECOND * 60;
@@ -90,10 +87,6 @@ public class MainActivity extends Activity {
         TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         CallStateListener callListener = new CallStateListener();
         manager.listen(callListener, PhoneStateListener.LISTEN_CALL_STATE);
-
-         AdView mAdView = (AdView) findViewById(R.id.adView);
-         AdRequest adRequest = new AdRequest.Builder().build();
-         mAdView.loadAd(adRequest);
     }
 
     @Override

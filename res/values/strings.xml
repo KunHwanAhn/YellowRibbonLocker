@@ -19,7 +19,6 @@
     <string name="locker_power_state_key">locker_power_state_key</string>
     <string name="locker_off_date_key">locker_off_date_key</string>
     <string name="turn_off_toast_string">This locker stops showing itself until today</string>
-    <string name="banner_ad_unit_id">my_add_unit_id</string>
 
     <bool name="locker_power_default_state">true</bool>
 
