@@ -6,5 +6,10 @@
     <string name="date_format">yyyy년 MMM dd일 (EEE) HH:mm</string>
     <string name="days_format">사고 %d일 째</string>
     <string name="turn_off_toast_string">오늘 하루 동안 잠금화면을 실행하지 않습니다</string>
+    
+    <!-- Strings for Runtime permission -->
+    <string name="runtime_perm_dialog_title">권한 요청</string>
+    <string name="runtime_perm_dialog_message">전화 수신 후, 화면이 꺼졌을 때 실행을 방지하기 위해서 필요합니다.</string>
+    <string name="runtime_perm_dialog_positive_btn_text">확인</string>
 
 </resources>

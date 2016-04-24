@@ -6,11 +6,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Drawable;
@@ -39,6 +45,7 @@ public class MainActivity extends Activity {
     private static final String THE_DAY = "2014-04-16";
     private static final String BASIC_DATE_FORMAT = "yyyy-MM-dd";
     private static final String DAY_ONLY_FORMAT = "dd";
+    private static final int PERMS_REQ_CODE = 1;
 
     private TextView mTimeView = null;
     private TextView mDDayView = null;
@@ -83,7 +90,41 @@ public class MainActivity extends Activity {
         updatePowerButton(powerState);
 
         startService(new Intent(this, YellowRibbonLockerService.class));
+    }
 
+    @SuppressLint("NewApi")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                setTelephonyManager();
+            } else {
+                final String[] requestPermisstions = { Manifest.permission.READ_PHONE_STATE };
+                
+                if (shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
+                    AlertDialog dialog = new AlertDialog.Builder(this)
+                            .setTitle(R.string.runtime_perm_dialog_title)
+                            .setMessage(R.string.runtime_perm_dialog_message)
+                            .setPositiveButton(R.string.runtime_perm_dialog_positive_btn_text, null)
+                            .create();
+                    dialog.show();
+                    dialog.setOnDismissListener(new OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            requestPermissions(requestPermisstions, PERMS_REQ_CODE);
+                        }
+                    });
+                } else {
+                    requestPermissions(requestPermisstions, PERMS_REQ_CODE);
+                }
+            }
+        } else {
+            setTelephonyManager();
+        }
+    }
+
+    private void setTelephonyManager() {
         TelephonyManager manager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
         CallStateListener callListener = new CallStateListener();
         manager.listen(callListener, PhoneStateListener.LISTEN_CALL_STATE);

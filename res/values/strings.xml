@@ -20,6 +20,10 @@
     <string name="locker_off_date_key">locker_off_date_key</string>
     <string name="turn_off_toast_string">This locker stops showing itself until today</string>
 
+    <!-- Strings for Runtime permission -->
+    <string name="runtime_perm_dialog_title">Request permission</string>
+    <string name="runtime_perm_dialog_message">Following permssion is needed to prevent from running this app, when you received a call and screen was turned off.</string>
+    <string name="runtime_perm_dialog_positive_btn_text">OK</string>
     <bool name="locker_power_default_state">true</bool>
 
     <dimen name="screen_locker_circle_size">256dp</dimen>
